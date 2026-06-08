@@ -1,0 +1,156 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Tipografia */
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Paleta fixa da marca (sempre disponível como utilitários Tailwind) */
+  --color-champagne: #d9d0b5;
+  --color-ivory: #f8f6f0;
+  --color-charcoal: #2b2b2b;
+  --color-taupe: #a89a85;
+  --color-bronze: #b89a67;
+
+  /* Status */
+  --color-success: #3e8e63;
+  --color-warning: #d6a93d;
+  --color-danger: #c74a4a;
+  --color-info: #4a7cc7;
+
+  /* Cores semânticas — seguem o tema activo via CSS vars */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+}
+
+/* ─── Dark Theme (padrão Palace Lounge) ─────────────────────────────────── */
+:root {
+  color-scheme: dark;
+
+  --background: #181818;
+  --foreground: #f8f6f0;
+  --surface: #232323;
+  --card: #232323;
+  --card-foreground: #f8f6f0;
+  --popover: #2a2a2a;
+  --popover-foreground: #f8f6f0;
+
+  --primary: #d9d0b5;
+  --primary-foreground: #181818;
+  --secondary: #2d2d2d;
+  --secondary-foreground: #f8f6f0;
+  --muted: #2d2d2d;
+  --muted-foreground: #a89a85;
+  --accent: #b89a67;
+  --accent-foreground: #181818;
+  --destructive: #c74a4a;
+
+  --border: #333333;
+  --input: #2d2d2d;
+  --ring: #d9d0b5;
+}
+
+/* ─── Light Theme ────────────────────────────────────────────────────────── */
+.light {
+  color-scheme: light;
+
+  --background: #f8f6f0;
+  --foreground: #2b2b2b;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #2b2b2b;
+  --popover: #ffffff;
+  --popover-foreground: #2b2b2b;
+
+  --primary: #b89a67;
+  --primary-foreground: #ffffff;
+  --secondary: #f0ece4;
+  --secondary-foreground: #2b2b2b;
+  --muted: #f0ece4;
+  --muted-foreground: #a89a85;
+  --accent: #d9d0b5;
+  --accent-foreground: #2b2b2b;
+  --destructive: #c74a4a;
+
+  --border: #e0d9cc;
+  --input: #f0ece4;
+  --ring: #b89a67;
+}
+
+/* ─── Reset & Base ───────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar personalizada ────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* ─── Utilitários globais ────────────────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #d9d0b5 0%, #b89a67 100%);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #d9d0b5 0%, #b89a67 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

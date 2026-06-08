@@ -1,0 +1,235 @@
+/* ─── Utilizadores ───────────────────────────────────────────────────────── */
+
+export type UserRole = 'admin' | 'client'
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  phone: string
+  role: UserRole
+  vip: boolean
+  totalSpent: number
+  reservationCount: number
+  avatarUrl?: string
+  createdAt: Date
+}
+
+/* ─── Mesas ──────────────────────────────────────────────────────────────── */
+
+export type TableStatus = 'available' | 'reserved' | 'occupied' | 'maintenance'
+export type TableLocation = 'indoor' | 'outdoor' | 'vip'
+
+export interface Table {
+  id: string
+  number: number
+  capacity: number
+  location: TableLocation
+  status: TableStatus
+  description?: string
+}
+
+/* ─── Reservas ───────────────────────────────────────────────────────────── */
+
+export type ReservationStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'in_service'
+  | 'completed'
+  | 'cancelled'
+
+export interface Reservation {
+  id: string
+  code: string
+  clientId: string
+  clientName: string
+  tableId: string
+  tableNumber: number
+  date: Date
+  time: string
+  guests: number
+  status: ReservationStatus
+  notes?: string
+  paymentId?: string
+  createdAt: Date
+}
+
+export interface CreateReservationDTO {
+  clientId: string
+  tableId: string
+  date: Date
+  time: string
+  guests: number
+  notes?: string
+}
+
+export interface UpdateReservationDTO {
+  tableId?: string
+  date?: Date
+  time?: string
+  guests?: number
+  status?: ReservationStatus
+  notes?: string
+}
+
+/* ─── Eventos ────────────────────────────────────────────────────────────── */
+
+export type EventType =
+  | 'birthday'
+  | 'wedding'
+  | 'corporate'
+  | 'private_dinner'
+  | 'themed'
+
+export type EventStatus =
+  | 'pending'
+  | 'approved'
+  | 'confirmed'
+  | 'completed'
+  | 'cancelled'
+
+export interface Event {
+  id: string
+  code: string
+  type: EventType
+  clientId: string
+  clientName: string
+  date: Date
+  guests: number
+  status: EventStatus
+  notes?: string
+  budget?: number
+  depositPaid: boolean
+  createdAt: Date
+}
+
+export interface CreateEventDTO {
+  type: EventType
+  clientId: string
+  date: Date
+  guests: number
+  notes?: string
+}
+
+/* ─── Cardápio ───────────────────────────────────────────────────────────── */
+
+export type MenuCategory = 'starters' | 'mains' | 'desserts' | 'drinks' | 'cocktails' | 'wines'
+
+export interface MenuItem {
+  id: string
+  name: string
+  description: string
+  category: MenuCategory
+  price: number
+  imageUrl?: string
+  available: boolean
+  featured: boolean
+  allergens?: string[]
+  createdAt: Date
+}
+
+export interface CreateMenuItemDTO {
+  name: string
+  description: string
+  category: MenuCategory
+  price: number
+  imageUrl?: string
+  available: boolean
+  featured: boolean
+}
+
+/* ─── Pagamentos ─────────────────────────────────────────────────────────── */
+
+export type PaymentMethod = 'multicaixa' | 'bank_transfer' | 'tpa' | 'visa_mastercard'
+export type PaymentStatus = 'pending' | 'confirmed' | 'failed'
+
+export interface Payment {
+  id: string
+  reservationId?: string
+  eventId?: string
+  clientId: string
+  clientName: string
+  amount: number
+  method: PaymentMethod
+  status: PaymentStatus
+  reference?: string
+  date: Date
+}
+
+/* ─── Avaliações ─────────────────────────────────────────────────────────── */
+
+export interface Review {
+  id: string
+  clientId: string
+  clientName: string
+  reservationId: string
+  rating: 1 | 2 | 3 | 4 | 5
+  comment?: string
+  service: number
+  atmosphere: number
+  food: number
+  drinks: number
+  createdAt: Date
+}
+
+/* ─── Dashboard ──────────────────────────────────────────────────────────── */
+
+export interface DashboardKPIs {
+  reservationsToday: number
+  reservationsThisMonth: number
+  registeredClients: number
+  scheduledEvents: number
+  dailyRevenue: number
+  monthlyRevenue: number
+  occupancyRate: number
+  cancellationRate: number
+  cancelledReservations: number
+  vipClients: number
+}
+
+export interface ChartDataPoint {
+  label: string
+  value: number
+  secondary?: number
+}
+
+/* ─── Filtros e paginação ────────────────────────────────────────────────── */
+
+export interface PaginationMeta {
+  total: number
+  page: number
+  perPage: number
+  totalPages: number
+}
+
+export interface ReservationFilters {
+  status?: ReservationStatus
+  date?: Date
+  clientId?: string
+  search?: string
+}
+
+export interface EventFilters {
+  status?: EventStatus
+  type?: EventType
+  search?: string
+}
+
+export interface ClientFilters {
+  vip?: boolean
+  search?: string
+}
+
+export interface MenuFilters {
+  category?: MenuCategory
+  available?: boolean
+  featured?: boolean
+  search?: string
+}
+
+export interface PaymentFilters {
+  status?: PaymentStatus
+  method?: PaymentMethod
+  dateFrom?: Date
+  dateTo?: Date
+}

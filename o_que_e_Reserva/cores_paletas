@@ -1,0 +1,126 @@
+Analisando o logotipo do Palace Lounge, a identidade visual transmite:
+
+Sofisticação
+Luxo discreto
+Elegância clássica
+Ambiente premium
+Experiência gastronómica exclusiva
+
+A cor principal do logotipo é um champagne dourado muito suave, que funciona muito bem para um restaurante premium.
+
+Paleta Principal (Oficial)
+Champagne Gold (Cor Principal)
+#D9D0B5
+
+Uso:
+
+Logo
+Títulos
+Botões principais
+Destaques
+Ivory White
+#F8F6F0
+
+Uso:
+
+Fundo principal
+Cartões
+Áreas de leitura
+Deep Charcoal
+#2B2B2B
+
+Uso:
+
+Textos
+Menus
+Footer
+Warm Taupe
+#A89A85
+
+Uso:
+
+Bordas
+Ícones secundários
+Estados hover
+Luxury Bronze
+#B89A67
+
+Uso:
+
+Botões premium
+Badges VIP
+Destaques especiais
+Paleta Premium Completa
+Cor	Hex	Uso
+Champagne Gold	#D9D0B5	Principal
+Luxury Bronze	#B89A67	Destaques
+Ivory White	#F8F6F0	Fundo
+Pearl White	#FFFFFF	Cards
+Warm Taupe	#A89A85	Secundária
+Deep Charcoal	#2B2B2B	Texto
+Midnight Black	#181818	Fundo escuro
+Soft Gold	#E7DCC0	Hover
+Gradiente Principal
+
+Para hero sections e botões premium:
+
+background: linear-gradient(
+  135deg,
+  #D9D0B5 0%,
+  #B89A67 100%
+);
+Tema Claro
+--primary: #D9D0B5;
+--secondary: #B89A67;
+--background: #F8F6F0;
+--surface: #FFFFFF;
+--text: #2B2B2B;
+--border: #E5DED0;
+
+Visual:
+
+Elegante
+Minimalista
+Sem excesso de dourado
+Tema Escuro (Recomendado)
+
+O Palace Lounge ficará muito mais sofisticado com tema escuro.
+
+--primary: #D9D0B5;
+--secondary: #B89A67;
+--background: #181818;
+--surface: #232323;
+--text: #F8F6F0;
+--border: #3A3A3A;
+
+Visual semelhante a:
+
+Restaurantes Michelin
+Lounges VIP
+Rooftops premium
+Hotéis de luxo
+Cores de Status
+Sucesso
+#3E8E63
+Aviso
+#D6A93D
+Erro
+#C74A4A
+Informação
+#4A7CC7
+Sugestão para o Sistema Palace Lounge
+
+80%
+
+Preto elegante (#181818)
+Cinza escuro (#232323)
+
+15%
+
+Champagne Gold (#D9D0B5)
+
+5%
+
+Bronze Premium (#B89A67)
+
+Essa combinação deixará o sistema com aparência semelhante a plataformas premium de restaurantes de luxo, mantendo total coerência com o logotipo atual do Palace Lounge.
