@@ -3,6 +3,10 @@ import { persist } from 'zustand/middleware'
 import { mockTables } from '@/data/mock-tables'
 import type {
   DigitalTicket,
+  Employee,
+  EmployeeOrder,
+  EmployeeOrderItem,
+  EmployeeRole,
   PublishedEvent,
   Reservation,
   Table,
@@ -30,6 +34,8 @@ interface VenueState {
   tables: Table[]
   publishedEvents: PublishedEvent[]
   tickets: DigitalTicket[]
+  employees: Employee[]
+  employeeOrders: EmployeeOrder[]
   walkInClients: User[]
   walkInReservations: Reservation[]
   addArea: () => void
@@ -44,7 +50,11 @@ interface VenueState {
   releaseTable: (tableId: string) => void
   createPublishedEvent: (data: CreatePublishedEventInput) => void
   toggleEventPublished: (id: string) => void
-  buyTicket: (eventId: string, seatId: string, clientId: string, clientName: string) => DigitalTicket
+  registerEmployee: (data: { name: string; phone: string; role: EmployeeRole; tableId?: string }) => Employee
+  assignEmployeeToTable: (employeeId: string, tableId?: string) => void
+  createEmployeeOrder: (data: { employeeId: string; tableId: string; items: EmployeeOrderItem[] }) => EmployeeOrder
+  buyTicket: (eventId: string, seatId: string, clientId: string, clientName: string, clientPhone?: string) => DigitalTicket
+  sendTicketWhatsApp: (ticketId: string, phone: string) => DigitalTicket | undefined
   validateTicket: (qrCode: string) => { ok: boolean; message: string; ticket?: DigitalTicket; event?: PublishedEvent }
 }
 
@@ -85,6 +95,18 @@ function buildSeats(tables: Table[], areas: VenueArea[]): TicketSeat[] {
     }))
 }
 
+function buildWhatsAppTicketUrl(ticket: DigitalTicket, event?: PublishedEvent, phone?: string) {
+  const digits = (phone || ticket.clientPhone || '').replace(/\D/g, '')
+  if (!digits) return undefined
+  const text = [
+    `Convite digital Palace Lounge`,
+    event ? `Evento: ${event.title}` : undefined,
+    `Mesa: ${ticket.tableNumber}`,
+    `Codigo QR: ${ticket.qrCode}`,
+  ].filter(Boolean).join('\n')
+  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
+}
+
 export const useVenueStore = create<VenueState>()(
   persist(
     (set, get) => ({
@@ -92,6 +114,8 @@ export const useVenueStore = create<VenueState>()(
       tables: initialTables,
       publishedEvents: [],
       tickets: [],
+      employees: [],
+      employeeOrders: [],
       walkInClients: [],
       walkInReservations: [],
 
@@ -280,6 +304,57 @@ export const useVenueStore = create<VenueState>()(
           ],
         })),
 
+      registerEmployee: (data) => {
+        const employee: Employee = {
+          id: `emp-${Date.now()}`,
+          name: data.name,
+          phone: data.phone,
+          role: data.role,
+          tableId: data.tableId,
+          active: true,
+          createdAt: new Date(),
+        }
+
+        set((state) => ({
+          employees: [employee, ...state.employees],
+        }))
+
+        return employee
+      },
+
+      assignEmployeeToTable: (employeeId, tableId) =>
+        set((state) => ({
+          employees: state.employees.map((employee) =>
+            employee.id === employeeId ? { ...employee, tableId } : employee
+          ),
+        })),
+
+      createEmployeeOrder: (data) => {
+        const employee = get().employees.find((item) => item.id === data.employeeId)
+        const table = get().tables.find((item) => item.id === data.tableId)
+        if (!employee || !table) throw new Error('Funcionario ou mesa invalida')
+        if (!data.items.length) throw new Error('Pedido vazio')
+
+        const total = data.items.reduce((sum, item) => sum + item.quantity * item.price, 0)
+        const order: EmployeeOrder = {
+          id: `ord-${Date.now()}`,
+          code: `PD-${String(get().employeeOrders.length + 1).padStart(4, '0')}`,
+          employeeId: employee.id,
+          employeeName: employee.name,
+          tableId: table.id,
+          tableNumber: table.number,
+          items: data.items,
+          total,
+          createdAt: new Date(),
+        }
+
+        set((state) => ({
+          employeeOrders: [order, ...state.employeeOrders],
+        }))
+
+        return order
+      },
+
       toggleEventPublished: (id) =>
         set((state) => ({
           publishedEvents: state.publishedEvents.map((event) =>
@@ -287,7 +362,7 @@ export const useVenueStore = create<VenueState>()(
           ),
         })),
 
-      buyTicket: (eventId, seatId, clientId, clientName) => {
+      buyTicket: (eventId, seatId, clientId, clientName, clientPhone) => {
         const event = get().publishedEvents.find((item) => item.id === eventId)
         const seat = event?.seats.find((item) => item.id === seatId)
         if (!event || !seat || seat.status !== 'available') {
@@ -303,9 +378,12 @@ export const useVenueStore = create<VenueState>()(
           tableNumber: seat.tableNumber,
           price: seat.price,
           qrCode: `PL-${event.id}-${seat.tableNumber}-${Date.now()}`,
+          clientPhone,
+          deliveryStatus: 'pending',
           status: 'valid',
           purchasedAt: new Date(),
         }
+        ticket.whatsappUrl = buildWhatsAppTicketUrl(ticket, event, clientPhone)
 
         set((state) => ({
           tickets: [ticket, ...state.tickets],
@@ -322,6 +400,25 @@ export const useVenueStore = create<VenueState>()(
         }))
 
         return ticket
+      },
+
+      sendTicketWhatsApp: (ticketId, phone) => {
+        const ticket = get().tickets.find((item) => item.id === ticketId)
+        const event = ticket ? get().publishedEvents.find((item) => item.id === ticket.eventId) : undefined
+        if (!ticket) return undefined
+
+        const updatedTicket = {
+          ...ticket,
+          clientPhone: phone,
+          deliveryStatus: 'sent' as const,
+          whatsappUrl: buildWhatsAppTicketUrl(ticket, event, phone),
+        }
+
+        set((state) => ({
+          tickets: state.tickets.map((item) => (item.id === ticketId ? updatedTicket : item)),
+        }))
+
+        return updatedTicket
       },
 
       validateTicket: (qrCode) => {

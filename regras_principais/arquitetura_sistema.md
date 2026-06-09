@@ -98,6 +98,8 @@ Relatorios existentes no prototipo:
 - mesas mais reservadas;
 - mesas mais vendidas por convites digitais;
 - receita por mesa.
+- funcionarios que mais vendem;
+- mesas que mais rendem por pedidos lancados pelos atendentes.
 
 ### 8.5 Store mock persistida
 
@@ -107,10 +109,69 @@ O prototipo usa `src/store/venue.store.ts` para persistir no `localStorage`:
 - mesas;
 - eventos publicados;
 - convites digitais;
+- funcionarios/atendentes;
+- pedidos lancados por funcionario e por mesa;
 - clientes cadastrados pelo operador;
 - reservas/ocupacoes locais feitas pelo operador.
 
 Quando o backend chegar, essa store deve ser substituida por adapters/API mantendo a mesma superficie funcional.
+
+### 8.6 Dashboard e gestao de funcionarios
+
+Rota admin: `/admin`
+
+O dashboard deve mostrar um card chamado `Mesas`, com:
+
+- total de mesas cadastradas;
+- quantidade de mesas vagas;
+- quantidade de mesas ocupadas;
+- quantidade de mesas reservadas.
+
+O dashboard tambem deve mostrar um resumo dos funcionarios que mais vendem, usando os pedidos lancados no sistema.
+
+Rota admin: `/admin/funcionarios`
+
+O admin pode:
+
+- cadastrar funcionario/atendente com nome, telefone WhatsApp e funcao;
+- atribuir um funcionario a uma mesa especifica;
+- alterar a mesa atribuida ao funcionario;
+- lancar pedidos feitos por uma mesa;
+- associar cada pedido ao funcionario que vendeu e a mesa atendida;
+- consultar ranking de funcionarios que mais vendem;
+- consultar ranking de mesas que mais rendem.
+
+Regra operacional:
+
+```txt
+receita da mesa = soma dos pedidos lancados para a mesa
+receita do funcionario = soma dos pedidos lancados pelo funcionario
+```
+
+Este modulo permite medir:
+
+- qual funcionario vende mais;
+- qual mesa rende mais;
+- quais areas do Palace estao gerando maior receita operacional;
+- quais mesas precisam de mais atencao comercial.
+
+### 8.7 WhatsApp para convites e QR codes
+
+Quando o cliente compra um convite digital, o sistema deve gerar:
+
+- numero/codigo unico do convite;
+- QR code unico;
+- mesa/lugar comprado;
+- link de envio por WhatsApp com o codigo QR e dados do evento.
+
+No prototipo, o envio e representado por uma URL `wa.me` pronta para abrir o WhatsApp. No backend real, o envio deve ser feito por integracao oficial, mantendo historico de envio.
+
+Estados esperados de entrega:
+
+```txt
+pending -> convite criado, ainda nao enviado
+sent    -> convite enviado por WhatsApp
+```
 
 ## 0. Premissa: Mock Data First
 
@@ -1056,8 +1117,11 @@ O backend deve cobrir:
 - eventos publicados pelo admin para venda de convites digitais;
 - snapshot dos lugares de cada evento publicado;
 - compra de convite com QR code unico;
+- envio de convite, numero e QR code por WhatsApp;
 - validacao de QR por staff, com historico de leitura;
-- relatorios de receita, top clientes, mesas mais reservadas, mesas mais vendidas, receita por mesa, ocupacao por area e validacoes por evento.
+- funcionarios/atendentes com atribuicao a mesas;
+- pedidos lancados por funcionario e por mesa;
+- relatorios de receita, top clientes, funcionarios que mais vendem, mesas mais reservadas, mesas mais vendidas, mesas que mais rendem, receita por mesa, ocupacao por area e validacoes por evento.
 
 Endpoints esperados:
 
@@ -1093,13 +1157,24 @@ GET    /published-events/:id/seats
 
 POST /tickets/purchase
 GET  /tickets/my
+POST /tickets/:id/send-whatsapp
 POST /tickets/validate
 GET  /tickets/scan-history
 
+GET    /employees
+POST   /employees
+PATCH  /employees/:id
+POST   /employees/:id/assign-table
+
+GET  /employee-orders
+POST /employee-orders
+
 GET /reports/revenue?from=&to=
 GET /reports/top-clients?from=&to=
+GET /reports/employees/sales?from=&to=
 GET /reports/tables/reservations?from=&to=
 GET /reports/tables/ticket-sales?from=&to=
+GET /reports/tables/order-revenue?from=&to=
 GET /reports/areas/occupancy?from=&to=
 GET /reports/events/sales?from=&to=
 GET /reports/tickets/validation?eventId=

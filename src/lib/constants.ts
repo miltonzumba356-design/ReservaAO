@@ -17,6 +17,7 @@ export const ROUTES = {
     DASHBOARD: '/admin',
     RESERVATIONS: '/admin/reservas',
     TABLES: '/admin/mesas',
+    EMPLOYEES: '/admin/funcionarios',
     CLIENTS: '/admin/clientes',
     EVENTS: '/admin/eventos',
     MENU: '/admin/cardapio',

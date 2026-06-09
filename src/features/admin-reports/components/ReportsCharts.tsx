@@ -187,3 +187,43 @@ export function TableTicketRevenueReport() {
     </div>
   )
 }
+
+export function TopEmployeesSalesReport() {
+  const employeeOrders = useVenueStore((state) => state.employeeOrders)
+  const employeeData = employeeOrders
+    .reduce<Array<{ name: string; receita: number; pedidos: number }>>((acc, order) => {
+      const item = acc.find((entry) => entry.name === order.employeeName)
+      if (item) {
+        item.receita += order.total
+        item.pedidos += 1
+      } else {
+        acc.push({ name: order.employeeName, receita: order.total, pedidos: 1 })
+      }
+      return acc
+    }, [])
+    .sort((a, b) => b.receita - a.receita)
+    .slice(0, 6)
+
+  return (
+    <div className="rounded-xl border border-border/40 bg-surface p-5">
+      <p className="text-sm font-semibold text-foreground mb-1">Funcionarios que mais Vendem</p>
+      <p className="text-xs text-muted-foreground mb-4">Receita dos pedidos lancados por atendente</p>
+      {employeeData.length ? (
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={employeeData} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
+            <XAxis type="number" tickFormatter={v => `${(Number(v)/1000).toFixed(0)}K`}
+              tick={{ fill: '#A89A85', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis type="category" dataKey="name" tick={{ fill: '#A89A85', fontSize: 10 }} axisLine={false} tickLine={false} width={110} />
+            <Tooltip contentStyle={tooltip} formatter={(v, name) => name === 'receita' ? [`${(Number(v)/1000).toFixed(0)}K AOA`, 'Receita'] : [v, 'Pedidos']} />
+            <Bar dataKey="receita" name="Receita" fill="#D9D0B5" radius={[0,3,3,0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className="flex h-[220px] items-center justify-center rounded-lg border border-border bg-background text-sm text-muted-foreground">
+          O ranking aparece depois dos primeiros pedidos lancados.
+        </div>
+      )}
+    </div>
+  )
+}

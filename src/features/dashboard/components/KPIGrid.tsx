@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useVenueStore } from '@/store/venue.store'
 
 interface KPI {
   label: string
@@ -22,9 +23,24 @@ const kpis: KPI[] = [
 ]
 
 export function KPIGrid() {
+  const tables = useVenueStore((state) => state.tables)
+  const availableTables = tables.filter((table) => table.status === 'available').length
+  const occupiedTables = tables.filter((table) => table.status === 'occupied').length
+  const reservedTables = tables.filter((table) => table.status === 'reserved').length
+  const allKpis: KPI[] = [
+    ...kpis,
+    {
+      label: 'Mesas',
+      value: String(tables.length),
+      sub: `${availableTables} vagas | ${occupiedTables} ocupadas | ${reservedTables} reservadas`,
+      trend: 'neutral',
+      color: 'text-success',
+    },
+  ]
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {kpis.map((kpi, i) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
+      {allKpis.map((kpi, i) => (
         <motion.div
           key={kpi.label}
           initial={{ opacity: 0, y: 12 }}

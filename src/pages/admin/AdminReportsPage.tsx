@@ -4,7 +4,7 @@ import { RevenueChart }       from '@/features/dashboard/components/RevenueChart
 import {
   CancellationsReport, TopClientsReport,
   OccupancyReport, TopProductsReport,
-  TableTicketRevenueReport, TopReservedTablesReport,
+  TableTicketRevenueReport, TopEmployeesSalesReport, TopReservedTablesReport,
 } from '@/features/admin-reports/components/ReportsCharts'
 
 export default function AdminReportsPage() {
@@ -37,6 +37,10 @@ export default function AdminReportsPage() {
       <div className="grid lg:grid-cols-2 gap-5">
         <TopReservedTablesReport />
         <TableTicketRevenueReport />
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-5">
+        <TopEmployeesSalesReport />
       </div>
     </div>
   )

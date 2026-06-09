@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import { CalendarDays, CreditCard, PartyPopper, QrCode, Ticket, Users } from 'lucide-react'
+import { CalendarDays, CreditCard, MessageCircle, PartyPopper, QrCode, Ticket, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { EVENT_STATUS_LABELS, EVENT_TYPE_LABELS } from '@/lib/constants'
@@ -234,8 +234,8 @@ function TicketSales() {
   function handleBuy() {
     if (!user || !selectedEvent || !selectedSeat) return
     try {
-      buyTicket(selectedEvent.id, selectedSeat.id, user.id, user.name)
-      toast.success('Convite digital comprado.')
+      const ticket = buyTicket(selectedEvent.id, selectedSeat.id, user.id, user.name, user.phone)
+      toast.success(ticket.whatsappUrl ? 'Convite comprado. Envie o QR pelo WhatsApp.' : 'Convite digital comprado.')
       setSelectedSeat(null)
     } catch {
       toast.error('Este lugar ja nao esta disponivel.')
@@ -302,7 +302,7 @@ function TicketSales() {
           <h3 className="font-semibold">Meus convites digitais</h3>
           <div className="grid gap-3 md:grid-cols-2">
             {clientTickets.map((ticket) => (
-              <DigitalTicketCard key={ticket.id} ticket={ticket} events={publishedEvents} />
+              <DigitalTicketCard key={ticket.id} ticket={ticket} events={publishedEvents} phone={user?.phone} />
             ))}
           </div>
         </div>
@@ -311,8 +311,18 @@ function TicketSales() {
   )
 }
 
-function DigitalTicketCard({ ticket, events }: { ticket: DigitalTicket; events: PublishedEvent[] }) {
+function DigitalTicketCard({ ticket, events, phone }: { ticket: DigitalTicket; events: PublishedEvent[]; phone?: string }) {
   const event = events.find((item) => item.id === ticket.eventId)
+  const sendTicketWhatsApp = useVenueStore((state) => state.sendTicketWhatsApp)
+  const digits = (phone || ticket.clientPhone || '').replace(/\D/g, '')
+  const whatsappUrl = ticket.whatsappUrl || (digits
+    ? `https://wa.me/${digits}?text=${encodeURIComponent([
+        'Convite digital Palace Lounge',
+        event ? `Evento: ${event.title}` : undefined,
+        `Mesa: ${ticket.tableNumber}`,
+        `Codigo QR: ${ticket.qrCode}`,
+      ].filter(Boolean).join('\n'))}`
+    : undefined)
 
   return (
     <article className="rounded-xl border border-border bg-surface p-4">
@@ -330,6 +340,18 @@ function DigitalTicketCard({ ticket, events }: { ticket: DigitalTicket; events: 
       <p className="mt-3 rounded-lg border border-border bg-background p-2 font-mono text-xs text-muted-foreground">
         {ticket.qrCode}
       </p>
+      {whatsappUrl && (
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => sendTicketWhatsApp(ticket.id, phone || ticket.clientPhone || '')}
+          className="mt-3 inline-flex h-9 items-center gap-2 rounded-md bg-success px-3 text-sm font-medium text-white transition-colors hover:bg-success/90"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Enviar QR pelo WhatsApp
+        </a>
+      )}
     </article>
   )
 }

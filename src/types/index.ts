@@ -82,13 +82,46 @@ export interface DigitalTicket {
   eventId: string
   clientId: string
   clientName: string
+  clientPhone?: string
   seatId: string
   tableNumber: number
   price: number
   qrCode: string
+  whatsappUrl?: string
+  deliveryStatus?: 'pending' | 'sent'
   status: 'valid' | 'used' | 'cancelled'
   usedAt?: Date
   purchasedAt: Date
+}
+
+export type EmployeeRole = 'attendant' | 'seller' | 'operator'
+
+export interface Employee {
+  id: string
+  name: string
+  phone: string
+  role: EmployeeRole
+  tableId?: string
+  active: boolean
+  createdAt: Date
+}
+
+export interface EmployeeOrderItem {
+  name: string
+  quantity: number
+  price: number
+}
+
+export interface EmployeeOrder {
+  id: string
+  code: string
+  employeeId: string
+  employeeName: string
+  tableId: string
+  tableNumber: number
+  items: EmployeeOrderItem[]
+  total: number
+  createdAt: Date
 }
 
 /* ─── Reservas ───────────────────────────────────────────────────────────── */

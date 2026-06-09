@@ -41,6 +41,7 @@ const ClientProfilePage = lazy(() => import('@/pages/client/ClientProfilePage'))
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'))
 const AdminReservationsPage = lazy(() => import('@/pages/admin/AdminReservationsPage'))
 const AdminTablesPage = lazy(() => import('@/pages/admin/AdminTablesPage'))
+const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage'))
 const AdminClientsPage = lazy(() => import('@/pages/admin/AdminClientsPage'))
 const AdminEventsPage = lazy(() => import('@/pages/admin/AdminEventsPage'))
 const AdminMenuPage = lazy(() => import('@/pages/admin/AdminMenuPage'))
@@ -83,6 +84,7 @@ export const router = createBrowserRouter([
       { index: true, element: wrap(AdminDashboardPage) },
       { path: 'reservas', element: wrap(AdminReservationsPage) },
       { path: 'mesas', element: wrap(AdminTablesPage) },
+      { path: 'funcionarios', element: wrap(AdminEmployeesPage) },
       { path: 'clientes', element: wrap(AdminClientsPage) },
       { path: 'eventos', element: wrap(AdminEventsPage) },
       { path: 'cardapio', element: wrap(AdminMenuPage) },
